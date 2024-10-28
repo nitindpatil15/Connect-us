@@ -13,7 +13,7 @@ import notificationRouter from './routes/notificationRoutes.js'; // Add Notifica
 const app = express();
 
 const corsOptions = {
-  origin: "http://localhost:3000",
+  origin: ["http://localhost:3000","https://connect-us-psi.vercel.app"],
   methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
   headers: ["Content-Type", 'Authorization', 'auth-token'],
   credentials: true,

@@ -42,13 +42,11 @@ const PostById = () => {
   }, [dispatch, id]);
 
   useEffect(() => {
-    // Initialize postLiked state based on post likes
     const isPostLiked = singlePost?.postById?.likes?.includes(
       userInfo?.user?._id
     );
     setPostLiked(isPostLiked);
 
-    // Initialize comment likes state
     const initialCommentLikes = {};
     comments.forEach((comment) => {
       initialCommentLikes[comment._id] = comment?.likes?.includes(
@@ -60,20 +58,24 @@ const PostById = () => {
 
   const handleLike = () => {
     setPostLiked(!postLiked);
-    if (postLiked) {
-      // Decrement like count if already liked
-      dispatch(togglePostLike(id)); // Optionally, you can dispatch an API call here
-    } else {
-      // Increment like count if not liked
-      dispatch(togglePostLike(id)); // Optionally, you can dispatch an API call here
-    }
+    dispatch(togglePostLike(id));
   };
 
-  const handleAddComment = (e) => {
+  const handleAddOrUpdateComment = (e) => {
     e.preventDefault();
     if (commentText.trim()) {
-      dispatch(addComment({ postId: id, content: commentText }));
+      if (commentToEdit) {
+        dispatch(
+          updateComment({
+            commentId: commentToEdit._id,
+            content: commentText,
+          })
+        );
+      } else {
+        dispatch(addComment({ postId: id, content: commentText }));
+      }
       setCommentText("");
+      setCommentToEdit(null);
     }
   };
 
@@ -103,17 +105,6 @@ const PostById = () => {
     setCommentText(comment.content);
   };
 
-  const handleUpdateComment = (e) => {
-    e.preventDefault();
-    if (commentText.trim()) {
-      dispatch(
-        updateComment({ commentId: commentToEdit._id, content: commentText })
-      );
-      setCommentText("");
-      setCommentToEdit(null);
-    }
-  };
-
   const handleDeleteComment = (commentId) => {
     dispatch(deleteComment(commentId));
   };
@@ -124,8 +115,7 @@ const PostById = () => {
       ...prevLikes,
       [commentId]: !isLiked,
     }));
-    // Here you could dispatch a like action if needed
-    dispatch(toggleCommentLike(commentId)); // Optionally, you can dispatch an API call here
+    dispatch(toggleCommentLike(commentId));
   };
 
   if (loading) return <p className="text-center">Loading...</p>;
@@ -254,7 +244,7 @@ const PostById = () => {
         )}
       </div>
 
-      <form onSubmit={handleAddComment} className="flex mb-4">
+      <form onSubmit={handleAddOrUpdateComment} className="flex mb-4">
         <input
           type="text"
           value={commentText}
@@ -266,17 +256,27 @@ const PostById = () => {
           type="submit"
           className="bg-blue-500 text-white px-4 py-2 rounded-lg"
         >
-          Comment
+          {commentToEdit ? "Update Comment" : "Comment"}
         </button>
       </form>
 
       <div className="flex justify-between">
-        <button onClick={handleEditToggle} className="text-blue-500">
-          {isEditing ? "Cancel Edit" : "Edit Post"}
-        </button>
-        <button onClick={handleDeletePost} className="text-red-500">
-          Delete Post
-        </button>
+        {userInfo?.user?._id === singlePost?.postById?.user && (
+          <button
+            onClick={handleEditToggle}
+            className="bg-blue-500 text-white px-4 py-2 rounded-lg"
+          >
+            {isEditing ? "Cancel" : "Edit"}
+          </button>
+        )}
+        {userInfo?.user?._id === singlePost?.postById?.user && (
+          <button
+            onClick={handleDeletePost}
+            className="bg-red-500 text-white px-4 py-2 rounded-lg"
+          >
+            Delete
+          </button>
+        )}
       </div>
     </div>
   );

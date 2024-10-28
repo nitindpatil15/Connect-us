@@ -2,13 +2,13 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios, { Axios } from "axios";
 import Cookies from "js-cookie";
 
-const host = "http://localhost:8237/api/v1";
+const host = "https://soco-backend-1.onrender.com/api/v1";
 
 export const registerUser = createAsyncThunk(
   "user/register",
   async (userData, { rejectWithValue }) => {
     try {
-      const response = await axios.post("${host}/users/register", userData);
+      const response = await axios.post(`${host}/users/register`, userData);
       return response.data.data;
     } catch (error) {
       return rejectWithValue(
@@ -38,6 +38,9 @@ export const getCurrentUser = createAsyncThunk(
     try {
       const response = await axios.get(`${host}/users/profile`, {
         withCredentials: true,
+        headers: {
+          Authorization: `Bearer${Cookies.get("token")}`,
+        },
       });
       return response.data.data;
     } catch (error) {
@@ -54,6 +57,9 @@ export const getUserById = createAsyncThunk(
     try {
       const response = await axios.get(`${host}/users/profile/${id}`, {
         withCredentials: true,
+        headers: {
+          Authorization: `Bearer${Cookies.get("token")}`,
+        },
       });
       return response.data.data.user;
     } catch (error) {
@@ -68,7 +74,16 @@ export const followUser = createAsyncThunk(
   "user/follow",
   async (userId, { rejectWithValue }) => {
     try {
-      const response = await axios.patch(`${host}/users/follow/${userId}`);
+      const response = await axios.patch(
+        `${host}/users/follow/${userId}`,
+        {},
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer${Cookies.get("token")}`,
+          },
+        }
+      );
       return response.data.data;
     } catch (error) {
       return rejectWithValue(
@@ -82,7 +97,13 @@ export const unfollowUser = createAsyncThunk(
   "user/unfollow",
   async (userId, { rejectWithValue }) => {
     try {
-      const response = await Axios.patch(`${host}/users/unfollow/${userId}`);
+      const response = await Axios.patch(`${host}/users/unfollow/${userId}`,{}, {
+        withCredentials:true,
+        headers: {
+          Authorization: `Bearer${Cookies.get("token")}`,
+        },
+      });
+      console.log("Unfollowed", response.data.data)
       return response.data.data;
     } catch (error) {
       return rejectWithValue(

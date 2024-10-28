@@ -2,17 +2,17 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import Cookies from "js-cookie"
 
-const API_URL = 'http://localhost:8237/api/v1/likes';
+const host = 'https://soco-backend-1.onrender.com/api/v1/likes';
 
 // Thunks for toggling likes on posts and comments
 export const togglePostLike = createAsyncThunk(
   'likes/togglePostLike',
   async (postId, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`${API_URL}/toggle/p/${postId}`,{},{
+      const response = await axios.post(`${host}/toggle/p/${postId}`,{},{
         withCredentials:true,
         headers:{
-          Authorization: `Bearer ${Cookies.get("token")}`,
+          Authorization: `Bearer${Cookies.get("token")}`,
         }
       });
       console.log("liked")
@@ -27,7 +27,7 @@ export const toggleCommentLike = createAsyncThunk(
   'likes/toggleCommentLike',
   async (commentId, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`${API_URL}/toggle/c/${commentId}`,{},{
+      const response = await axios.post(`${host}/toggle/c/${commentId}`,{},{
         withCredentials:true,
         headers:{
           Authorization: `Bearer${Cookies.get("token")}`,

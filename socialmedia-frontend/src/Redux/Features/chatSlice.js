@@ -11,13 +11,15 @@ const initialState = {
   error: null,
 };
 
+const host = "https://soco-backend-1.onrender.com"
+
 // Async thunk to send a message
 export const sendMessage = createAsyncThunk(
   "chat/sendMessage",
   async ({ receiverId, message }, { rejectWithValue }) => {
     try {
       const response = await axios.post(
-        `http://localhost:8237/api/v1/chat/send/${receiverId}`,
+        `${host}/api/v1/chat/send/${receiverId}`,
         { message },
         {
           withCredentials: true,
@@ -40,7 +42,7 @@ export const fetchChatHistory = createAsyncThunk(
   async (userId, { rejectWithValue }) => {
     try {
       const response = await axios.get(
-        `http://localhost:8237/api/v1/chat/history/${userId}`,
+        `${host}/api/v1/chat/history/${userId}`,
         {
           withCredentials: true,
           headers: {
@@ -60,7 +62,7 @@ export const fetchUnreadMessages = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await axios.get(
-        `http://localhost:8237/api/v1/chat/unread`,
+        `${host}/api/v1/chat/unread`,
         {
           withCredentials: true,
           headers: {

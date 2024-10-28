@@ -30,21 +30,28 @@ const UserById = () => {
   } = useSelector((state) => state.posts);
 
   useEffect(() => {
-    if (!userInfo) dispatch(getCurrentUser());
-    dispatch(getUserById(id));
-    dispatch(fetchUserPostsById({ token: userInfo?.token, id }));
+    const fetchUserData = async () => {
+      if (!userInfo) await dispatch(getCurrentUser());
+      await Promise.all([
+        dispatch(getUserById(id)),
+        dispatch(fetchUserPostsById({ id })),
+      ]);
+    };
+
+    fetchUserData();
   }, [dispatch, id, userInfo]);
 
   const isFollowing = UserById?.followers?.some(
     (follower) => follower?._id === userInfo?.user?._id
   );
 
-  const handleFollow = () => {dispatch(followUser(id));
-    navigate(`/profile/${id}`)
-  }
-  const handleUnfollow = () => {dispatch(unfollowUser(id));
-    navigate(`/profile/${id}`)
-  }
+  const handleFollow = async () => {
+    await dispatch(followUser(id));
+  };
+
+  const handleUnfollow = async () => {
+    await dispatch(unfollowUser(id));
+  };
 
   const handlePostById = (postId) => {
     navigate(`/post/${postId}`);
@@ -54,7 +61,7 @@ const UserById = () => {
   if (userError || postsError) return <p>{userError || postsError}</p>;
 
   return (
-    <div className="flex flex-col items-center p-4">
+    <div className="flex flex-col items-center p-4 md:mr-32">
       {/* User Header */}
       <div className="flex items-center space-x-6 mb-4">
         <img
@@ -107,7 +114,10 @@ const UserById = () => {
             Follow
           </button>
         )}
-        <button className="px-4 py-2 border border-gray-300 text-gray-700 font-semibold rounded-md hover:bg-gray-100" onClick={()=>navigate('/chat-list')}>
+        <button
+          className="px-4 py-2 border border-gray-300 text-gray-700 font-semibold rounded-md hover:bg-gray-100"
+          onClick={() => navigate("/chat-list")}
+        >
           Message
         </button>
       </div>
@@ -127,7 +137,7 @@ const UserById = () => {
                 src={post.image}
                 alt={post.title}
                 onClick={() => handlePostById(post._id)}
-                className="w-[20rem] object-cover rounded-md cursor-pointer"
+                className="w-[20rem] h-[20rem] my-2 object-cover rounded-md cursor-pointer"
               />
             </div>
           ))

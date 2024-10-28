@@ -13,7 +13,7 @@ export const fetchNotifications = createAsyncThunk(
   'notifications/fetchNotifications',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get('http://localhost:8237/api/v1/notification/');
+      const response = await axios.get('https://soco-backend-1.onrender.com/api/v1/notification/');
       return response.data.data; // Assuming notifications are in the data
     } catch (error) {
       return rejectWithValue(error.response.data.message);

@@ -30,6 +30,12 @@ function Navbar() {
 
         {/* Navbar Actions */}
         <Link
+          to="/"
+          className="text-white text-2xl ml-6 mb-5 flex items-center justify-between"
+        >
+          Home
+        </Link>
+        <Link
           to="/new/post"
           className="text-white text-lg mb-3 flex items-center justify-between"
         >

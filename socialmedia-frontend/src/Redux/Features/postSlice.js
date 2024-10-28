@@ -3,14 +3,18 @@ import axios from "axios";
 import Cookies from "js-cookie";
 
 // Define the base API URL at the top
-const host = "http://localhost:8237/api/v1/posts";
+const host = "https://soco-backend-1.onrender.com/api/v1/posts";
 
 // Async thunk for fetching all posts
 export const fetchPosts = createAsyncThunk(
   "posts/fetchPosts",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`${host}/all-post`);
+      const response = await axios.get(`${host}/all-post`,{
+        withCredentials:true,
+        headers: {
+          Authorization:`Bearer${Cookies.get('token')}`
+      }});
       console.log(response);
       return response.data.data.allposts; // Access the posts array directly
     } catch (error) {
@@ -32,7 +36,7 @@ export const publishPost = createAsyncThunk(
       const response = await axios.post(`${host}/`, formData, {
         withCredentials: true,
         headers: {
-          Authorization: `Bearer ${Cookies.get("token")}`,
+          Authorization: `Bearer${Cookies.get("token")}`,
           "Content-Type": "multipart/form-data",
         },
       });
@@ -101,12 +105,15 @@ export const deletePost = createAsyncThunk(
 // Async thunk for fetching current user's posts
 export const fetchCurrentUserPosts = createAsyncThunk(
   "posts/fetchCurrentUserPosts",
-  async (token, { rejectWithValue }) => {
+  async (_, { rejectWithValue }) => {
     try {
       const response = await axios.get(`${host}/user/posts`, {
         withCredentials: true,
-        headers: { Authorization: `Bearer ${token}` },
+        headers: {
+          Authorization: `Bearer${Cookies.get("token")}`,
+        },
       });
+      console.log(response.data.data); // Confirm that data is correctly fetched
       return response.data.data;
     } catch (error) {
       return rejectWithValue(
@@ -118,12 +125,13 @@ export const fetchCurrentUserPosts = createAsyncThunk(
 
 export const fetchUserPostsById = createAsyncThunk(
   "posts/fetchUserPostsById",
-  async ({ token, id }, { rejectWithValue }) => {
+  async ({ id }, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`${host}/user/posts/${id}`, {
+      const response = await axios.get(`${host}/user/posts/${id}`,{
         withCredentials: true,
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer${Cookies.get("token")}` },
       });
+      console.log(response.data.data)
       return response.data.data;
     } catch (error) {
       return rejectWithValue(
@@ -213,6 +221,7 @@ const postsSlice = createSlice({
 
       .addCase(fetchCurrentUserPosts.pending, (state) => {
         state.loading = true;
+        state.error = null;
       })
       .addCase(fetchCurrentUserPosts.fulfilled, (state, action) => {
         state.loading = false;
@@ -220,7 +229,7 @@ const postsSlice = createSlice({
       })
       .addCase(fetchCurrentUserPosts.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
+        state.error = action.payload || "Failed to fetch user posts";
       })
       .addCase(fetchUserPostsById.pending, (state) => {
         state.loading = true;

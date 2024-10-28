@@ -92,7 +92,7 @@ const Feed = () => {
   if (error) return <p>{error}</p>;
 
   return (
-    <div className="flex flex-col m-auto bg-black text-white p-4">
+    <div className="flex flex-col m-auto bg-black text-white p-4 md:ml-40">
       <input
         type="text"
         placeholder="Search users or content..."

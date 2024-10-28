@@ -102,7 +102,6 @@ const Chat = () => {
               <div>
                 <h5
                   className="font-semibold text-gray-900 cursor-pointer"
-                  onClick={() => navigateToUserProfile(contact._id)}
                 >
                   {contact.username}
                 </h5>

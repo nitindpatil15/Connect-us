@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import Cookies from "js-cookie";
 
-const host = "http://localhost:8237/api/v1/comments";
+const host = "https://soco-backend-1.onrender.com/api/v1/comments";
 
 // Fetch comments for a specific post
 export const fetchComments = createAsyncThunk(
@@ -12,7 +12,7 @@ export const fetchComments = createAsyncThunk(
       const response = await axios.get(`${host}/${postId}`, {
         withCredentials: true,
         headers: {
-          Authorization: `Bearer ${Cookies.get("token")}`,
+          Authorization: `Bearer${Cookies.get("token")}`,
         },
       });
       return response.data.data;
@@ -35,7 +35,7 @@ export const addComment = createAsyncThunk(
         {
           withCredentials: true,
           headers: {
-            Authorization: `Bearer ${Cookies.get("token")}`,
+            Authorization: `Bearer${Cookies.get("token")}`,
           },
         }
       );
@@ -75,6 +75,7 @@ export const deleteComment = createAsyncThunk(
   "comments/deleteComment",
   async (commentId, { rejectWithValue }) => {
     try {
+      // eslint-disable-next-line
       const response = await axios.delete(
         `${host}/${commentId}`,
         {

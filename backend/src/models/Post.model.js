@@ -14,7 +14,11 @@ const postSchema =new Schema({
     owner:{
         type:Schema.Types.ObjectId,
         ref:"User"
-    }
+    },
+    likes:[{
+        type:Schema.Types.ObjectId,
+        ref:"User"
+    }]
 }) 
 
 const Post = mongoose.model("Post", postSchema);

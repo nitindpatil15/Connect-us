@@ -47,8 +47,8 @@ const NewPost = () => {
   };
 
   return (
-    <div className="publish-post bg-gray-800 p-4 rounded-lg shadow-lg">
-      <h2 className="text-white text-lg font-semibold mb-4">Publish a Post</h2>
+    <div className="publish-post bg-gray-800 p-4 rounded-lg shadow-lg w-[42rem] mt-20">
+      <h2 className="text-white font-semibold mb-4 text-4xl">Publish a Post</h2>
       {error && <p className="text-red-500 mb-2">{error}</p>}
       {success && <p className="text-green-500 mb-2">{success}</p>}
       <form onSubmit={handleSubmit} encType="multipart/form-data">
@@ -96,7 +96,7 @@ const NewPost = () => {
             <img
               src={imagePreview}
               alt="Image Preview"
-              className="w-full h-auto rounded"
+              className="w-60 rounded"
             />
           </div>
         )}

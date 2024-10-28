@@ -36,35 +36,67 @@ const sendMessage = asynchandler(async (req, res) => {
       .status(200)
       .json(new ApiResponse(200, newMessage, "Message sent successfully"));
   } catch (error) {
-    console.log(error)
+    console.log(error);
     throw new ApiError(500, `Server Error:${error}`);
   }
 });
 
-const getChatHistory = async (req, res) => {
-  const { userId } = req.params;
+const getChatHistory = asynchandler(async (req, res) => {
+  const { userId } = req.params; // Extract userId from request parameters
   const currentUserId = req.user._id;
 
-  // Find a chat with the specified user
+  // Check if userId is provided and is a valid ObjectId
+  if (!userId) {
+    return res
+      .status(400)
+      .json(new ApiResponse(400, null, "User ID is required."));
+  }
+
   try {
     const chat = await Chat.findOne({
       participants: { $all: [currentUserId, userId] },
     }).populate("messages.sender", "username avatar");
-  
+
     if (!chat) {
       return res
         .status(200)
         .json(new ApiResponse(200, [], "No chat history found"));
     }
-  
+
     return res
       .status(200)
       .json(
         new ApiResponse(200, chat.messages, "Chat history fetched successfully")
       );
   } catch (error) {
-    throw new ApiError(500,`Server Error:${error}`)
+    console.error(error); // Log the error for better debugging
+    throw new ApiError(500, `Server Error: ${error.message}`);
   }
-};
+});
 
-export { sendMessage,getChatHistory };
+const getUnreadMessages = asynchandler(async (req, res) => {
+  const userId = req.user._id;
+
+  try {
+    const chats = await Chat.find({ participants: userId });
+    const unreadMessages = chats.flatMap((chat) =>
+      chat.messages.filter(
+        (msg) => msg.sender.toString() !== userId && !msg.read
+      )
+    );
+
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          unreadMessages,
+          "Unread messages fetched successfully"
+        )
+      );
+  } catch (error) {
+    throw new ApiError(500, `Server Error:${error}`);
+  }
+});
+
+export { sendMessage, getChatHistory, getUnreadMessages };

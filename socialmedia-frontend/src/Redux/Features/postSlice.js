@@ -53,7 +53,7 @@ export const fetchPostById = createAsyncThunk(
         headers: { Authorization: `Bearer${Cookies.get("accessToken")}` },
       });
       console.log(response);
-      return response.data.data.postById;
+      return response.data.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || "Failed to fetch post");
     }
@@ -63,13 +63,14 @@ export const fetchPostById = createAsyncThunk(
 // Async thunk for updating a post
 export const updatePost = createAsyncThunk(
   "posts/updatePost",
-  async ({ postId, token, title, content }, { rejectWithValue }) => {
+  async ({ postId, title, content }, { rejectWithValue }) => {
     try {
       const response = await axios.patch(
         `${host}/${postId}`,
         { title, content },
         {
-          headers: { Authorization: `Bearer${token}` },
+          withCredentials:true,
+          headers: { Authorization: `Bearer${Cookies.get("token")}` },
         }
       );
       return response.data;
@@ -85,7 +86,10 @@ export const deletePost = createAsyncThunk(
   async ({ postId, token }, { rejectWithValue }) => {
     try {
       const response = await axios.delete(`${host}/${postId}`, {
-        headers: { Authorization: `Bearer${token}` },
+          withCredentials:true,
+          headers: { 
+            Authorization: `Bearer${Cookies.get("token")}` 
+          },
       });
       return response.data;
     } catch (error) {

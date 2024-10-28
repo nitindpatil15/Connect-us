@@ -1,17 +1,14 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
-import Cookies from "js-cookie"
+import axios, { Axios } from "axios";
+import Cookies from "js-cookie";
 
-const api = axios.create({
-  baseURL: "http://localhost:8237/api/v1",
-  withCredentials: true,
-});
+const host = "http://localhost:8237/api/v1";
 
 export const registerUser = createAsyncThunk(
   "user/register",
   async (userData, { rejectWithValue }) => {
     try {
-      const response = await api.post("/users/register", userData);
+      const response = await axios.post("${host}/users/register", userData);
       return response.data.data;
     } catch (error) {
       return rejectWithValue(
@@ -25,9 +22,9 @@ export const loginUser = createAsyncThunk(
   "user/login",
   async (credentials, { rejectWithValue }) => {
     try {
-      const response = await api.post("/users/login", credentials);
-      console.log(response.data.data.accessToken)
-      Cookies.set("token",response.data.data.accessToken)
+      const response = await axios.post(`${host}/users/login`, credentials);
+      console.log(response.data.data.accessToken);
+      Cookies.set("token", response.data.data.accessToken);
       return response.data.data.UserDetail;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || "Login failed");
@@ -39,7 +36,7 @@ export const getCurrentUser = createAsyncThunk(
   "user/getCurrentUser",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await api.get("/users/profile", {
+      const response = await axios.get(`${host}/users/profile`, {
         withCredentials: true,
       });
       return response.data.data;
@@ -55,7 +52,7 @@ export const getUserById = createAsyncThunk(
   "user/getUserById",
   async (id, { rejectWithValue }) => {
     try {
-      const response = await api.get(`/users/profile/${id}`, {
+      const response = await axios.get(`${host}/users/profile/${id}`, {
         withCredentials: true,
       });
       return response.data.data.user;
@@ -71,7 +68,7 @@ export const followUser = createAsyncThunk(
   "user/follow",
   async (userId, { rejectWithValue }) => {
     try {
-      const response = await api.patch(`/users/follow/${userId}`);
+      const response = await axios.patch(`${host}/users/follow/${userId}`);
       return response.data.data;
     } catch (error) {
       return rejectWithValue(
@@ -85,7 +82,7 @@ export const unfollowUser = createAsyncThunk(
   "user/unfollow",
   async (userId, { rejectWithValue }) => {
     try {
-      const response = await api.patch(`/users/unfollow/${userId}`);
+      const response = await Axios.patch(`${host}/users/unfollow/${userId}`);
       return response.data.data;
     } catch (error) {
       return rejectWithValue(
@@ -95,20 +92,45 @@ export const unfollowUser = createAsyncThunk(
   }
 );
 
+export const updateUserDetails = createAsyncThunk(
+  "user/updateUserDetails",
+  async ({ formData }, { rejectWithValue }) => {
+    try {
+      const response = await axios.patch(
+        `${host}/users/profile/update`,
+        formData,
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer${Cookies.get("token")}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response.data.message || "Failed to update user details"
+      );
+    }
+  }
+);
+
 const userSlice = createSlice({
   name: "user",
   initialState: {
+    user: null,
     userInfo: null,
-    UserById:null,
+    UserById: null,
     loading: false,
     error: null,
   },
   reducers: {
     logoutUser: (state) => {
       state.userInfo = null;
-      Cookies.remove("accessToken")
-      Cookies.remove("refreshToken")
-      Cookies.remove("token")
+      Cookies.remove("accessToken");
+      Cookies.remove("refreshToken");
+      Cookies.remove("token");
     },
   },
   extraReducers: (builder) => {
@@ -183,6 +205,18 @@ const userSlice = createSlice({
         state.userInfo = action.payload;
       })
       .addCase(unfollowUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(updateUserDetails.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateUserDetails.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload;
+      })
+      .addCase(updateUserDetails.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

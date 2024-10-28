@@ -1,4 +1,3 @@
-import { asynchandler } from "../utils/asynchandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import user from "../models/User.model.js";
 import { uploadOnCloudinary } from "../utils/claudinary.js";
@@ -25,7 +24,7 @@ const generateAccessAndRefreshToken = async (userId) => {
   }
 };
 
-const registerUser = asynchandler(async (req, res) => {
+const registerUser = async (req, res) => {
   try {
     const { fullName, email, username, password } = req.body;
     console.log("Email: ", email);
@@ -96,9 +95,9 @@ const registerUser = asynchandler(async (req, res) => {
   } catch (error) {
     throw new ApiError(500, error?.message || "Server Error ");
   }
-});
+};
 
-const loginUser = asynchandler(async (req, res) => {
+const loginUser = async (req, res) => {
   try {
     const { email, username, password } = req.body;
     if (!(username || email)) {
@@ -146,9 +145,9 @@ const loginUser = asynchandler(async (req, res) => {
   } catch (error) {
     throw new ApiError(500, "Server Error ");
   }
-});
+};
 
-const logoutUser = asynchandler(async (req, res) => {
+const logoutUser = async (req, res) => {
   try {
     await user.findByIdAndUpdate(
       req.user._id,
@@ -175,9 +174,9 @@ const logoutUser = asynchandler(async (req, res) => {
   } catch (error) {
     throw new ApiError(500, "Internal Server Error");
   }
-});
+};
 
-const getCurrentUser = asynchandler(async (req, res) => {
+const getCurrentUser = async (req, res) => {
   try {
     const user = await User.findById(req.user._id)
       .populate({
@@ -203,9 +202,9 @@ const getCurrentUser = asynchandler(async (req, res) => {
   } catch (error) {
     throw new ApiError(500, "Server Error");
   }
-});
+};
 
-const getProfile = asynchandler(async (req, res) => {
+const getProfile = async (req, res) => {
   const { userId } = req.params;
   try {
     const user = await User.findById(userId)
@@ -232,7 +231,7 @@ const getProfile = asynchandler(async (req, res) => {
   } catch (error) {
     throw new ApiError(500, "Server Error");
   }
-});
+};
 
 const getFeed = async (req, res) => {
   try {
@@ -250,7 +249,7 @@ const getFeed = async (req, res) => {
   }
 };
 
-const followUser = asynchandler(async (req, res) => {
+const followUser = async (req, res) => {
   const { userId } = req.params;
   const currentUser = req.user;
   try {
@@ -283,9 +282,9 @@ const followUser = asynchandler(async (req, res) => {
     console.log(error);
     throw new ApiError(500, error.message || "Server Error");
   }
-});
+};
 
-const unfollowUser = asynchandler(async (req, res) => {
+const unfollowUser = async (req, res) => {
   const { userId } = req.params;
   const currentUser = req.user;
   try {
@@ -310,7 +309,7 @@ const unfollowUser = asynchandler(async (req, res) => {
     console.log(error);
     throw new ApiError(500, error.message || "Server Error");
   }
-});
+};
 
 // Helper function to send email notification
 const sendFollowNotification = async (recipientEmail, followerUsername) => {
@@ -332,6 +331,44 @@ const sendFollowNotification = async (recipientEmail, followerUsername) => {
   await transporter.sendMail(mailOptions);
 };
 
+const updateUserDetails =async (req, res) => {
+  try {
+    const { fullName, username } = req.body; 
+    const avatarLocalPath = req.file?.path;
+
+    if (!avatarLocalPath && !fullName && !username) {
+      throw new ApiError(400, "No updates provided. Avatar, FullName, or Username is required.");
+    }
+
+    // If an avatar is provided, upload it
+    let avatarUrl;
+    if (avatarLocalPath) {
+      avatarUrl = await uploadOnCloudinary(avatarLocalPath);
+
+      if (!avatarUrl.url) {
+        throw new ApiError(400, "Error while uploading Avatar File");
+      }
+    }
+
+    const updateData = {};
+    if (avatarUrl) updateData.avatar = avatarUrl.url; 
+    if (fullName) updateData.fullName = fullName; 
+    if (username) updateData.username = username; 
+
+    const user = await User.findByIdAndUpdate(
+      req.user?._id,
+      { $set: updateData },
+      { new: true } 
+    ).select("-password");
+
+    return res.status(200).json(new ApiResponse(200, user, "User details updated successfully"));
+  } catch (error) {
+    console.log(error)
+    throw new ApiError(500, "Problems during updating user details");
+  }
+};
+
+
 export {
   registerUser,
   loginUser,
@@ -341,4 +378,5 @@ export {
   getFeed,
   followUser,
   unfollowUser,
+  updateUserDetails
 };

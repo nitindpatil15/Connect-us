@@ -1,28 +1,34 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
-import Cookies from "js-cookie"
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
+import Cookies from "js-cookie";
 
 // Define initial state
 const initialState = {
   messages: [],
   chatHistory: [],
+  unreadMessages: [],
   loading: false,
   error: null,
 };
 
 // Async thunk to send a message
 export const sendMessage = createAsyncThunk(
-  'chat/sendMessage',
+  "chat/sendMessage",
   async ({ receiverId, message }, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`http://localhost:8237/api/v1/chat/send/${receiverId}`, { message },{
-        withCredentials: true,
-        headers: {
-          Authorization: `Bearer ${Cookies.get("accessToken")}`,
-        },
-      });
+      const response = await axios.post(
+        `http://localhost:8237/api/v1/chat/send/${receiverId}`,
+        { message },
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer${Cookies.get("accessToken")}`,
+          },
+        }
+      );
       return response.data.data; // Assuming the message is returned in the data
     } catch (error) {
+      console.log(error)
       return rejectWithValue(error.response.data.message);
     }
   }
@@ -30,16 +36,39 @@ export const sendMessage = createAsyncThunk(
 
 // Async thunk to get chat history
 export const fetchChatHistory = createAsyncThunk(
-  'chat/fetchChatHistory',
+  "chat/fetchChatHistory",
   async (userId, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`http://localhost:8237/api/v1/chat/history/${userId}`,{
-        withCredentials: true,
-        headers: {
-          Authorization: `Bearer ${Cookies.get("accessToken")}`,
-        },
-      });
+      const response = await axios.get(
+        `http://localhost:8237/api/v1/chat/history/${userId}`,
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer${Cookies.get("accessToken")}`,
+          },
+        }
+      );
       return response.data.data; // Assuming messages are in the data
+    } catch (error) {
+      return rejectWithValue(error.response.data.message);
+    }
+  }
+);
+
+export const fetchUnreadMessages = createAsyncThunk(
+  "chat/fetchUnreadMessages",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8237/api/v1/chat/unread`,
+        {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer${Cookies.get("accessToken")}`,
+          },
+        }
+      );
+      return response.data.data; // Assuming unread messages are in the data
     } catch (error) {
       return rejectWithValue(error.response.data.message);
     }
@@ -48,17 +77,23 @@ export const fetchChatHistory = createAsyncThunk(
 
 // Create slice
 const chatSlice = createSlice({
-  name: 'chat',
+  name: "chat",
   initialState,
   reducers: {
+    addMessage: (state, action) => {
+      state.messages.push(action.payload);
+      // Add to chatHistory if needed
+    },
     clearChat: (state) => {
       state.messages = [];
       state.chatHistory = [];
       state.error = null;
     },
+    addMessageToHistory: (state, action) => {
+      state.chatHistory.push(action.payload);
+    },
   },
   extraReducers: (builder) => {
-    // Handle sendMessage actions
     builder
       .addCase(sendMessage.pending, (state) => {
         state.loading = true;
@@ -66,13 +101,12 @@ const chatSlice = createSlice({
       })
       .addCase(sendMessage.fulfilled, (state, action) => {
         state.loading = false;
-        state.messages.push(action.payload); // Add the new message to messages array
+        state.messages.push(action.payload); 
       })
       .addCase(sendMessage.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
-      // Handle fetchChatHistory actions
       .addCase(fetchChatHistory.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -84,9 +118,21 @@ const chatSlice = createSlice({
       .addCase(fetchChatHistory.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      .addCase(fetchUnreadMessages.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchUnreadMessages.fulfilled, (state, action) => {
+        state.loading = false;
+        state.unreadMessages = action.payload; // Set unread messages
+      })
+      .addCase(fetchUnreadMessages.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });
 
-export const { clearChat } = chatSlice.actions;
+export const { clearChat, addMessage,addMessageToHistory } = chatSlice.actions;
 export default chatSlice.reducer;

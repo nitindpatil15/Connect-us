@@ -84,10 +84,12 @@ const getpostById = asynchandler(async (req, res) => {
       throw new ApiError("Error while fetching post");
     }
     console.log(postById);
+    const user = await User.findById(postById.owner)
     return res
       .status(200)
-      .json(new ApiResponse(200, { postById }, "post fetched by postId"));
+      .json(new ApiResponse(200, { postById,user }, "post fetched by postId"));
   } catch (error) {
+    console.log(error)
     throw new ApiError(500, "Error in fetching post by Id");
   }
 });

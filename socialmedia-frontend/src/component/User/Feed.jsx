@@ -104,7 +104,7 @@ const Feed = () => {
         filteredPosts.map((post) => (
           <div
             key={post._id}
-            className="mb-4 p-3 border border-gray-700 rounded-lg"
+            className="mb-4 p-3 border border-gray-700 rounded-lg w-[30rem]"
           >
             <div className="author-info flex items-center mb-2">
               <img
@@ -125,8 +125,7 @@ const Feed = () => {
               <img
                 src={post.image}
                 alt="Post content"
-                style={{ maxWidth: "100%" }}
-                className="post-image mb-3"
+                className="post-image mb-3 w-[30rem]"
               />
             )}
             <button

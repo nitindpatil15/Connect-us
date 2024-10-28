@@ -36,12 +36,15 @@ const UserById = () => {
   }, [dispatch, id, userInfo]);
 
   const isFollowing = UserById?.followers?.some(
-    (follower) => follower._id === userInfo?.user._id
+    (follower) => follower?._id === userInfo?.user?._id
   );
-  console.log(UserById)
 
-  const handleFollow = () => dispatch(followUser(id));
-  const handleUnfollow = () => dispatch(unfollowUser(id));
+  const handleFollow = () => {dispatch(followUser(id));
+    navigate(`/profile/${id}`)
+  }
+  const handleUnfollow = () => {dispatch(unfollowUser(id));
+    navigate(`/profile/${id}`)
+  }
 
   const handlePostById = (postId) => {
     navigate(`/post/${postId}`);
@@ -104,7 +107,7 @@ const UserById = () => {
             Follow
           </button>
         )}
-        <button className="px-4 py-2 border border-gray-300 text-gray-700 font-semibold rounded-md hover:bg-gray-100">
+        <button className="px-4 py-2 border border-gray-300 text-gray-700 font-semibold rounded-md hover:bg-gray-100" onClick={()=>navigate('/chat-list')}>
           Message
         </button>
       </div>

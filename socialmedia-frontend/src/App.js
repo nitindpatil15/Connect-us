@@ -9,22 +9,28 @@ import PostById from "./component/Post/PostById";
 import NewPost from "./component/Post/NewPost";
 import UserById from "./component/User/Anotheruser";
 import Chat from "./component/chat/Chat";
+import UpdateUserDetails from "./component/User/UpdateUser";
 
 function App() {
   return (
     <div className="app bg-black">
       <Router>
-        <Navbar/>
-        <Routes>
-          <Route path="/" element={<Feed/>} />
-          <Route path="/register" element={<Register/>} />
-          <Route path="/login" element={<Login/>} />
-          <Route path="/profile" element={<Profile/>} />
-          <Route path="/profile/:id" element={<UserById/>} />
-          <Route path="/post/:id" element={<PostById/>} />
-          <Route path="/new/post" element={<NewPost/>} />
-          <Route path="/chat-list" element={<Chat/>} />
-        </Routes>
+        <div className="flex">
+          <Navbar />
+          <div className="m-4 md:ml-[30rem]">
+          <Routes>
+              <Route path="/" element={<Feed />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/profile/:id" element={<UserById />} />
+              <Route path="/profile/update" element={<UpdateUserDetails/>} />
+              <Route path="/post/:id" element={<PostById />} />
+              <Route path="/new/post" element={<NewPost />} />
+              <Route path="/chat-list" element={<Chat />} />
+          </Routes>
+          </div>
+        </div>
       </Router>
     </div>
   );

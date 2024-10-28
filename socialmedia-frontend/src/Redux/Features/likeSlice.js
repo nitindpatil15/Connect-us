@@ -15,6 +15,7 @@ export const togglePostLike = createAsyncThunk(
           Authorization: `Bearer ${Cookies.get("accessToken")}`,
         }
       });
+      console.log("liked")
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
@@ -32,6 +33,7 @@ export const toggleCommentLike = createAsyncThunk(
           Authorization: `Bearer${Cookies.get("accessToken")}`,
         }
       });
+      console.log("liked")
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);
@@ -42,41 +44,35 @@ export const toggleCommentLike = createAsyncThunk(
 const likesSlice = createSlice({
   name: 'likes',
   initialState: {
-    postLikes: {}, // Stores post ID and like status
-    commentLikes: {}, // Stores comment ID and like status
+    postLikes: {},
+    commentLikes: {},
     loading: false,
     error: null,
   },
-  reducers: {},
+  reducers: {
+    setPostLike: (state, action) => {
+      const { postId, liked } = action.payload;
+      state.postLikes[postId] = liked;
+    },
+    setCommentLike: (state, action) => {
+      const { commentId, liked } = action.payload;
+      state.commentLikes[commentId] = liked;
+    },
+  },
   extraReducers: (builder) => {
     builder
-      .addCase(togglePostLike.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
       .addCase(togglePostLike.fulfilled, (state, action) => {
-        state.loading = false;
         const postId = action.meta.arg;
-        state.postLikes[postId] = !state.postLikes[postId]; // Toggle like status
-      })
-      .addCase(togglePostLike.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload || 'Failed to like/unlike post';
-      })
-      .addCase(toggleCommentLike.pending, (state) => {
-        state.loading = true;
-        state.error = null;
+        const liked = !state.postLikes[postId];
+        state.postLikes[postId] = liked;
       })
       .addCase(toggleCommentLike.fulfilled, (state, action) => {
-        state.loading = false;
         const commentId = action.meta.arg;
-        state.commentLikes[commentId] = !state.commentLikes[commentId]; // Toggle like status
+        const liked = !state.commentLikes[commentId];
+        state.commentLikes[commentId] = liked;
       })
-      .addCase(toggleCommentLike.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload || 'Failed to like/unlike comment';
-      });
   },
 });
 
+export const { setPostLike, setCommentLike } = likesSlice.actions;
 export default likesSlice.reducer;

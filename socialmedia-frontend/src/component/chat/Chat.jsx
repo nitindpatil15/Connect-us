@@ -1,132 +1,191 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchChatHistory, sendMessage } from '../../Redux/Features/chatSlice';
-import { getCurrentUser } from '../../Redux/Features/userSlice';
+import React, { useEffect, useState, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchChatHistory,
+  sendMessage,
+  addMessageToHistory,
+  fetchUnreadMessages,
+} from "../../Redux/Features/chatSlice";
+import { getCurrentUser } from "../../Redux/Features/userSlice";
+import { useNavigate } from "react-router-dom";
 
 const Chat = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { messages, chatHistory, loading, error } = useSelector((state) => state.chat);
-  const { userInfo } = useSelector((state) => state.auth); // Assuming userInfo contains followers and following data
-  const [newMessage, setNewMessage] = useState('');
+  const { chatHistory } = useSelector((state) => state.chat);
+  const { userInfo } = useSelector((state) => state.auth);
+  const [newMessage, setNewMessage] = useState("");
+  const [selectedContact, setSelectedContact] = useState(null);
+  const chatContainerRef = useRef(null);
+  const currentUserId = userInfo?.user?._id;
 
   useEffect(() => {
-    // Fetch current user data (including followers and following)
     dispatch(getCurrentUser());
-  }, [dispatch]);
+    dispatch(fetchUnreadMessages());
+
+    if (selectedContact) {
+      const intervalId = setInterval(() => {
+        dispatch(fetchChatHistory(selectedContact._id)); // Make sure to pass the _id
+      }, 5000); // Poll every 5 seconds
+
+      return () => clearInterval(intervalId);
+    }
+  }, [dispatch, selectedContact]);
 
   useEffect(() => {
-    if (userInfo) {
-      // Assuming userInfo contains arrays of followers and following
-      const contactList = [...userInfo.followers, ...userInfo.following];
-      dispatch(fetchChatHistory(contactList)); // Update chatHistory with followers and following users
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop =
+        chatContainerRef.current.scrollHeight;
     }
-  }, [userInfo, dispatch]);
+  }, [chatHistory]);
 
-  const handleSendMessage = () => {
-    if (newMessage.trim()) {
-      const receiverId = 'receiver-id'; // Replace with actual receiver ID from selected contact
-      dispatch(sendMessage({ receiverId, message: newMessage }));
-      setNewMessage('');
+  const contactList = userInfo ? [...userInfo?.user?.followers] : [];
+
+  const handleContactClick = (contact) => {
+    setSelectedContact(contact);
+    dispatch(fetchChatHistory(contact._id)); // Ensure passing the correct contact ID
+  };
+
+  const handleSendMessage = async () => {
+    if (newMessage.trim() && selectedContact) {
+      const receiverId = selectedContact._id; // Get the _id of the selected contact
+
+      const messageData = {
+        sender: {
+          _id: currentUserId,
+          username: userInfo.user.username,
+          avatar: userInfo.user.avatar,
+        },
+        receiver: receiverId, // Pass the receiver ID
+        message: newMessage,
+        timestamp: new Date().toISOString(),
+      };
+
+      try {
+        await dispatch(
+          sendMessage({ receiverId, message: newMessage }) // Pass the correct receiverId
+        ).unwrap();
+
+        dispatch(addMessageToHistory(messageData));
+        setNewMessage("");
+      } catch (err) {
+        alert(err); // Show alert if there is an error sending the message
+      }
     }
   };
 
+  const navigateToUserProfile = (userId) => {
+    navigate(`/profile/${userId}`);
+  };
+
   return (
-    <div className="flex h-screen">
-      {/* Sidebar */}
-      <div className="w-1/4 p-4 border-r border-gray-300 bg-gray-100">
+    <div className="flex h-screen w-full">
+      {/* Contacts List Section */}
+      <div className="w-[20rem] p-4 border-r border-gray-300 bg-gray-100">
         <input
           type="text"
           placeholder="Search..."
           className="w-full p-2 mb-4 border border-gray-300 rounded-lg focus:outline-none"
         />
         <div className="space-y-4">
-          {chatHistory.map((contact, index) => (
+          {contactList.map((contact) => (
             <div
-              key={index}
+              key={contact._id}
+              onClick={() => handleContactClick(contact)}
               className="flex items-center p-2 transition-all bg-white rounded-lg cursor-pointer hover:bg-gray-200"
             >
               <img
-                src={contact.profilePicture || 'default-profile.png'} // Use default if profilePicture is missing
+                src={contact.avatar || "default-profile.png"}
                 alt="Profile"
                 className="w-10 h-10 mr-3 rounded-full"
               />
               <div>
-                <h5 className="font-semibold text-gray-900">{contact.username}</h5>
-                <p className="text-sm text-gray-500">{contact.lastMessage || 'No recent message'}</p>
+                <h5
+                  className="font-semibold text-gray-900 cursor-pointer"
+                  onClick={() => navigateToUserProfile(contact._id)}
+                >
+                  {contact.username}
+                </h5>
+                <p className="text-sm text-gray-500">
+                  {"Tap to view Msg"}
+                </p>
               </div>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Chat Area */}
-      <div className="flex flex-col w-1/2 p-4">
-        <div className="flex-1 overflow-y-auto space-y-4 p-2 bg-gray-50">
-          {loading ? (
-            <p className="text-center text-gray-500">Loading messages...</p>
-          ) : (
-            messages.map((msg, index) => (
+      {/* Chat Section */}
+      <div className="flex-1 flex flex-col w-[40rem] h-auto border-red-700 border-2">
+        {selectedContact && (
+          <div className="flex items-center p-4 bg-gray-200 border-b border-red-300">
+            <img
+              src={selectedContact.avatar || "default-profile.png"}
+              alt="Profile"
+              className="w-10 h-10 mr-3 rounded-full"
+              onClick={() => navigateToUserProfile(selectedContact._id)}
+            />
+            <h5
+              className="font-semibold text-gray-900 cursor-pointer"
+              onClick={() => navigateToUserProfile(selectedContact._id)}
+            >
+              {selectedContact.username}
+            </h5>
+          </div>
+        )}
+
+        <div className="flex-1 p-4 overflow-y-auto" ref={chatContainerRef}>
+          {chatHistory.map((message, index) => (
+            <div
+              key={index}
+              className={`flex items-end mb-4 ${
+                message.sender._id === currentUserId
+                  ? "justify-end"
+                  : "justify-start"
+              }`}
+            >
+              {message.sender._id !== currentUserId && (
+                <img
+                  src={message.sender.avatar || "default-profile.png"}
+                  alt="Profile"
+                  className="w-8 h-8 mr-2 rounded-full cursor-pointer"
+                  onClick={() => navigateToUserProfile(message.sender._id)}
+                />
+              )}
               <div
-                key={index}
-                className={`flex items-end ${
-                  msg.isSender ? 'justify-end' : 'justify-start'
+                className={`max-w-xs px-4 py-2 rounded-lg ${
+                  message.sender._id === currentUserId
+                    ? "bg-blue-500 text-white"
+                    : "bg-gray-300 text-black"
                 }`}
               >
-                <div
-                  className={`max-w-xs p-3 text-white rounded-lg ${
-                    msg.isSender ? 'bg-blue-500' : 'bg-gray-300 text-gray-900'
-                  }`}
-                >
-                  <p>{msg.content}</p>
-                  <span className="text-xs text-gray-500">{msg.timestamp}</span>
-                </div>
+                {message.content} 
               </div>
-            ))
-          )}
-          {error && <p className="text-center text-red-500">{error}</p>}
+              {message.sender._id === currentUserId && (
+                <img
+                  src={userInfo.user.avatar || "default-profile.png"}
+                  alt="Profile"
+                  className="w-8 h-8 ml-2 rounded-full cursor-pointer"
+                  onClick={() => navigateToUserProfile(currentUserId)}
+                />
+              )}
+            </div>
+          ))}
         </div>
-        <div className="flex items-center p-2 mt-4 border-t border-gray-300">
+
+        <div className="flex p-4 border-t border-gray-300">
           <input
             type="text"
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
-            placeholder="Type a message..."
-            className="flex-1 px-4 py-2 mr-2 border border-gray-300 rounded-lg focus:outline-none"
+            placeholder="Type your message..."
+            className="flex-1 p-2 border border-gray-300 rounded-lg focus:outline-none"
           />
           <button
             onClick={handleSendMessage}
-            className="px-4 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600"
+            className="ml-2 px-4 py-2 text-white bg-blue-500 rounded-lg"
           >
             Send
-          </button>
-        </div>
-      </div>
-
-      {/* Profile Section */}
-      <div className="w-1/4 p-4 bg-gray-100 border-l border-gray-300">
-        <div className="flex flex-col items-center p-4 bg-white rounded-lg shadow">
-          <img
-            src={userInfo?.profilePicture || 'profile-pic-url'}
-            alt="Profile"
-            className="w-24 h-24 mb-4 rounded-full"
-          />
-          <h3 className="text-lg font-semibold">{userInfo?.username || 'Profile Name'}</h3>
-          <p className="text-sm text-gray-500 mb-4 text-center">
-            {userInfo?.bio || 'Bio text here...'}
-          </p>
-          <button className="px-4 py-2 text-white bg-blue-500 rounded-lg hover:bg-blue-600">
-            View Profile
-          </button>
-        </div>
-        <div className="flex justify-around mt-6">
-          <button className="p-2 text-blue-500 bg-gray-200 rounded-full">
-            📞
-          </button>
-          <button className="p-2 text-blue-500 bg-gray-200 rounded-full">
-            📹
-          </button>
-          <button className="p-2 text-blue-500 bg-gray-200 rounded-full">
-            ✉️
           </button>
         </div>
       </div>

@@ -32,7 +32,7 @@ export const publishPost = createAsyncThunk(
       const response = await axios.post(`${host}/`, formData, {
         withCredentials: true,
         headers: {
-          Authorization: `Bearer ${Cookies.get("accessToken")}`,
+          Authorization: `Bearer ${Cookies.get("token")}`,
           "Content-Type": "multipart/form-data",
         },
       });
@@ -50,7 +50,7 @@ export const fetchPostById = createAsyncThunk(
     try {
       const response = await axios.get(`${host}/${id}`, {
         withCredentials: true,
-        headers: { Authorization: `Bearer${Cookies.get("accessToken")}` },
+        headers: { Authorization: `Bearer${Cookies.get("token")}` },
       });
       console.log(response);
       return response.data.data;

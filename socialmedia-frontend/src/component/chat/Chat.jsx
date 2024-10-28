@@ -39,7 +39,7 @@ const Chat = () => {
     }
   }, [chatHistory]);
 
-  const contactList = userInfo ? [...userInfo?.user?.followers] : [];
+  const contactList = userInfo ? [...userInfo?.user?.followers,...userInfo?.user?.following] : [];
 
   const handleContactClick = (contact) => {
     setSelectedContact(contact);

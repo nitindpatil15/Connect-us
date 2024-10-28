@@ -1,10 +1,9 @@
 import Chat from "../models/Chat.model.js";
-import { asynchandler } from "../utils/asynchandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { io } from "../index.js";
 
-const sendMessage = asynchandler(async (req, res) => {
+const sendMessage = async (req, res) => {
   const { receiverId } = req.params;
   const { message } = req.body;
   const senderId = req.user._id;
@@ -39,9 +38,9 @@ const sendMessage = asynchandler(async (req, res) => {
     console.log(error);
     throw new ApiError(500, `Server Error:${error}`);
   }
-});
+};
 
-const getChatHistory = asynchandler(async (req, res) => {
+const getChatHistory = async (req, res) => {
   const { userId } = req.params; // Extract userId from request parameters
   const currentUserId = req.user._id;
 
@@ -72,9 +71,9 @@ const getChatHistory = asynchandler(async (req, res) => {
     console.error(error); // Log the error for better debugging
     throw new ApiError(500, `Server Error: ${error.message}`);
   }
-});
+};
 
-const getUnreadMessages = asynchandler(async (req, res) => {
+const getUnreadMessages = async (req, res) => {
   const userId = req.user._id;
 
   try {
@@ -97,6 +96,6 @@ const getUnreadMessages = asynchandler(async (req, res) => {
   } catch (error) {
     throw new ApiError(500, `Server Error:${error}`);
   }
-});
+};
 
 export { sendMessage, getChatHistory, getUnreadMessages };

@@ -7,7 +7,7 @@ import { ACCESS_TOKEN_SECRET } from "../constant.js";
 const verifyJWT = asynchandler(async (req, _, next) => {
   try {
     const token =
-      req.cookies?.accessToken ||
+      req.cookies?.token ||
       req.header("Authorization")?.replace("Bearer", "");
       console.log("from middleware",token)
     if (!token) {

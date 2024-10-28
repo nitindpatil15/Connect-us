@@ -12,7 +12,7 @@ export const togglePostLike = createAsyncThunk(
       const response = await axios.post(`${API_URL}/toggle/p/${postId}`,{},{
         withCredentials:true,
         headers:{
-          Authorization: `Bearer ${Cookies.get("accessToken")}`,
+          Authorization: `Bearer ${Cookies.get("token")}`,
         }
       });
       console.log("liked")
@@ -30,7 +30,7 @@ export const toggleCommentLike = createAsyncThunk(
       const response = await axios.post(`${API_URL}/toggle/c/${commentId}`,{},{
         withCredentials:true,
         headers:{
-          Authorization: `Bearer${Cookies.get("accessToken")}`,
+          Authorization: `Bearer${Cookies.get("token")}`,
         }
       });
       console.log("liked")

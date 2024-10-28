@@ -22,7 +22,7 @@ export const sendMessage = createAsyncThunk(
         {
           withCredentials: true,
           headers: {
-            Authorization: `Bearer${Cookies.get("accessToken")}`,
+            Authorization: `Bearer${Cookies.get("token")}`,
           },
         }
       );
@@ -44,7 +44,7 @@ export const fetchChatHistory = createAsyncThunk(
         {
           withCredentials: true,
           headers: {
-            Authorization: `Bearer${Cookies.get("accessToken")}`,
+            Authorization: `Bearer${Cookies.get("token")}`,
           },
         }
       );
@@ -64,7 +64,7 @@ export const fetchUnreadMessages = createAsyncThunk(
         {
           withCredentials: true,
           headers: {
-            Authorization: `Bearer${Cookies.get("accessToken")}`,
+            Authorization: `Bearer${Cookies.get("token")}`,
           },
         }
       );

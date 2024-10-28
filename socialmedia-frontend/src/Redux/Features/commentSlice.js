@@ -12,7 +12,7 @@ export const fetchComments = createAsyncThunk(
       const response = await axios.get(`${host}/${postId}`, {
         withCredentials: true,
         headers: {
-          Authorization: `Bearer ${Cookies.get("accessToken")}`,
+          Authorization: `Bearer ${Cookies.get("token")}`,
         },
       });
       return response.data.data;
@@ -35,7 +35,7 @@ export const addComment = createAsyncThunk(
         {
           withCredentials: true,
           headers: {
-            Authorization: `Bearer ${Cookies.get("accessToken")}`,
+            Authorization: `Bearer ${Cookies.get("token")}`,
           },
         }
       );
@@ -57,7 +57,7 @@ export const updateComment = createAsyncThunk(
         {
           withCredentials: true,
           headers: {
-            Authorization: `Bearer${Cookies.get("accessToken")}`,
+            Authorization: `Bearer${Cookies.get("token")}`,
           },
         }
       );
@@ -80,7 +80,7 @@ export const deleteComment = createAsyncThunk(
         {
           withCredentials: true,
           headers: {
-            Authorization: `Bearer${Cookies.get("accessToken")}`,
+            Authorization: `Bearer${Cookies.get("token")}`,
           },
         }
       );

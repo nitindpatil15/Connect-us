@@ -331,13 +331,16 @@ const sendFollowNotification = async (recipientEmail, followerUsername) => {
   await transporter.sendMail(mailOptions);
 };
 
-const updateUserDetails =async (req, res) => {
+const updateUserDetails = async (req, res) => {
   try {
-    const { fullName, username } = req.body; 
+    const { fullName, username } = req.body;
     const avatarLocalPath = req.file?.path;
 
     if (!avatarLocalPath && !fullName && !username) {
-      throw new ApiError(400, "No updates provided. Avatar, FullName, or Username is required.");
+      throw new ApiError(
+        400,
+        "No updates provided. Avatar, FullName, or Username is required."
+      );
     }
 
     // If an avatar is provided, upload it
@@ -351,23 +354,24 @@ const updateUserDetails =async (req, res) => {
     }
 
     const updateData = {};
-    if (avatarUrl) updateData.avatar = avatarUrl.url; 
-    if (fullName) updateData.fullName = fullName; 
-    if (username) updateData.username = username; 
+    if (avatarUrl) updateData.avatar = avatarUrl.url;
+    if (fullName) updateData.fullName = fullName;
+    if (username) updateData.username = username;
 
     const user = await User.findByIdAndUpdate(
       req.user?._id,
       { $set: updateData },
-      { new: true } 
+      { new: true }
     ).select("-password");
 
-    return res.status(200).json(new ApiResponse(200, user, "User details updated successfully"));
+    return res
+      .status(200)
+      .json(new ApiResponse(200, user, "User details updated successfully"));
   } catch (error) {
-    console.log(error)
+    console.log(error);
     throw new ApiError(500, "Problems during updating user details");
   }
 };
-
 
 export {
   registerUser,
@@ -378,5 +382,5 @@ export {
   getFeed,
   followUser,
   unfollowUser,
-  updateUserDetails
+  updateUserDetails,
 };

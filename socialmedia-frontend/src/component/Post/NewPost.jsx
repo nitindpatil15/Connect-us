@@ -47,7 +47,7 @@ const NewPost = () => {
   };
 
   return (
-    <div className="publish-post bg-gray-800 p-4 rounded-lg shadow-lg w-[42rem] mt-20">
+    <div className="publish-post bg-gray-800 p-4 m-4 md:ml-12 rounded-lg shadow-lg w-auto">
       <h2 className="text-white font-semibold mb-4 text-4xl">Publish a Post</h2>
       {error && <p className="text-red-500 mb-2">{error}</p>}
       {success && <p className="text-green-500 mb-2">{success}</p>}

@@ -15,20 +15,22 @@ function App() {
   return (
     <div className="app bg-black">
       <Router>
-        <div className="flex">
+        <div className="md:flex">
           <Navbar />
-          <div className="m-4 md:ml-[30rem]">
-          <Routes>
-              <Route path="/" element={<Feed />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/profile/:id" element={<UserById />} />
-              <Route path="/profile/update" element={<UpdateUserDetails/>} />
-              <Route path="/post/:id" element={<PostById />} />
-              <Route path="/new/post" element={<NewPost />} />
-              <Route path="/chat-list" element={<Chat />} />
-          </Routes>
+          <div className="flex justify-center items-center w-screen">
+            <div>
+              <Routes>
+                <Route path="/" element={<Feed />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/profile/:id" element={<UserById />} />
+                <Route path="/profile/update" element={<UpdateUserDetails />} />
+                <Route path="/post/:id" element={<PostById />} />
+                <Route path="/new/post" element={<NewPost />} />
+                <Route path="/chat-list" element={<Chat />} />
+              </Routes>
+            </div>
           </div>
         </div>
       </Router>

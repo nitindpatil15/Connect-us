@@ -44,9 +44,9 @@ const UpdateUserDetails = () => {
     };
 
     return (
-        <div className="mt-24">
-            <div className="flex justify-around">
-                <form onSubmit={handleSubmit} method="post" className="w-96">
+        <div className="md:mt-24">
+            <div className="flex justify-center">
+                <form onSubmit={handleSubmit} method="post" className="md:w-96">
                     <div className="text-white text-4xl mb-2 text-center">
                         <span className="material-icons" style={{ fontSize: "6rem" }}>
                             edit

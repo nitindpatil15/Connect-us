@@ -2,13 +2,13 @@ import React from "react";
 
 const ContactList = ({ contactList, onContactSelect }) => {
   return (
-    <div className="w-[34rem] md:w-[20rem] p-4 border-r border-gray-300 bg-white overflow-y-auto">
+    <div className="w-screen md:w-[30rem] p-4 border-r border-gray-300 bg-white">
       <input
         type="text"
         placeholder="Search..."
         className="w-full p-2 mb-4 border border-gray-300 rounded-lg focus:outline-none"
       />
-      <div className="space-y-4">
+      <div className="p-8 m-auto">
         {contactList.map((contact) => (
           <div
             key={contact._id}

@@ -28,7 +28,7 @@ const Login = () => {
   return (
     <div className="mt-24">
       <div className="flex justify-around">
-        <form onSubmit={handleSubmit} method="post" className="w-96">
+        <form onSubmit={handleSubmit} method="post" className="w-64 md:w-96">
           <div className="text-white text-4xl mb-2 text-center">
             <span className="material-icons" style={{ fontSize: "6rem" }}>
               account_circle

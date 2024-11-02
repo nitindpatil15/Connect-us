@@ -1,4 +1,5 @@
 import React, { useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const ChatWindow = ({
   chatHistory,
@@ -10,6 +11,8 @@ const ChatWindow = ({
 }) => {
   const chatContainerRef = useRef(null);
 
+  const navigate = useNavigate()
+
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
@@ -17,15 +20,16 @@ const ChatWindow = ({
   }, [chatHistory]);
 
   return (
-    <div className="flex-1 w-[34rem] md:w-[50rem] flex flex-col bg-white h-full">
+    <div className="flex-1 w-screen md:w-[40rem] flex flex-col bg-white h-full">
       {selectedContact && (
         <div className="flex items-center p-4 bg-gray-100 border-b border-gray-300">
           <img
             src={selectedContact.avatar || "default-profile.png"}
             alt="Profile"
-            className="w-10 h-10 mr-3 rounded-full"
+            className="w-10 h-10 mr-3 rounded-full cursor-pointer"
+            onClick={()=>navigate(`/profile/${selectedContact._id}`)}
           />
-          <h5 className="font-semibold text-gray-800">{selectedContact.username}</h5>
+          <h5 className="font-semibold text-gray-800 cursor-pointer" onClick={()=>navigate(`/profile/${selectedContact._id}`)}>{selectedContact.username}</h5>
         </div>
       )}
 

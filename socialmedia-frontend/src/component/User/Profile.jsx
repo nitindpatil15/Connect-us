@@ -45,28 +45,28 @@ const Profile = () => {
         <img
           src={userInfo?.user.avatar}
           alt="Avatar"
-          className="w-40 h-40 rounded-full border mt-10 border-gray-300"
+          className="w-20 md:w-40 md:h-40 rounded-full border mt-10 border-gray-300"
         />
         <div>
-          <h2 className="text-2xl text-white font-bold">
+          <h2 className="text-lg md:text-2xl text-white font-bold">
             {userInfo?.user.fullName}
           </h2>
           <p className="text-gray-400 font-bold">@{userInfo?.user.username}</p>
-          <div className="flex space-x-4 mt-2 text-xl">
+          <div className="flex space-x-4 mt-2 text-base md:text-xl">
             <div
               onClick={() => setShowFollowers(true)}
               className="text-white cursor-pointer"
             >
-              <span className="font-bold">
+              <span className="font-bold text-base md:text-xl">
                 {userInfo?.user.followers?.length || 0}
               </span>{" "}
               followers
             </div>
             <div
               onClick={() => setShowFollowing(true)}
-              className="text-white cursor-pointer"
+              className="text-white cursor-pointer  text-base md:text-xl"
             >
-              <span className="font-bold">
+              <span className="font-bold text-base md:text-xl">
                 {userInfo?.user.following?.length || 0}
               </span>{" "}
               following
@@ -100,7 +100,7 @@ const Profile = () => {
               <img
                 src={post.image}
                 alt={post.title}
-                className="w-[20rem] h-[20rem] my-2 object-cover rounded-md cursor-pointer"
+                className="w-[20rem] h-auto w- md:h-[20rem] my-2 object-cover rounded-md cursor-pointer"
               />
             </div>
           ))

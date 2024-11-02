@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "material-icons/iconfont/material-icons.css";
 import { Link, useNavigate } from "react-router-dom";
-import { useDispatch} from 'react-redux';
+import { useDispatch } from "react-redux";
 import { registerUser } from "../../Redux/Features/userSlice";
 
 const Register = () => {
@@ -40,103 +40,101 @@ const Register = () => {
         navigate("/login");
       })
       .catch((err) => {
-        console.error('Failed to register:', err);
+        console.error("Failed to register:", err);
       });
   };
 
   return (
-    <div className="mt-24 mx-16 md:mx-0">
-      <div className="md:ml-32 flex justify-around">
-        <form onSubmit={handleOnSubmit} className="flex flex-col mx-4">
-          <div className="h-24">
-            <div className="profile-pic flex flex-row-reverse justify-between">
-              <label className="form__label" htmlFor="profilePic">
-                Profile Picture
-              </label>
+    <div className="flex justify-center items-center min-h-screen bg-gray-100 mt-8">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md md:max-w-2xl lg:max-w-3xl mx-4">
+        <form onSubmit={handleOnSubmit} className="flex flex-col">
+          <h2 className="text-3xl font-semibold text-center mb-6">Register</h2>
+
+          <div className="flex flex-col items-center mb-6">
+            <label htmlFor="profilePic" className="form__label mb-2">
+              Profile Picture
+            </label>
+            <input
+              className="text-sm mb-2"
+              type="file"
+              name="avatar"
+              id="profilePic"
+              onChange={handleProfilePicChange}
+              required
+            />
+            {previewProfilePic && (
+              <img
+                className="rounded-full border-2 w-24 h-24 object-cover"
+                src={previewProfilePic}
+                alt="Avatar"
+              />
+            )}
+          </div>
+
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col">
+              <label className="text-gray-700 font-bold mb-1">Full Name</label>
               <input
-                className="text-white mt-6 mx-2"
-                type="file"
-                name="avatar"
-                id="profilePic"
-                onChange={handleProfilePicChange}
+                className="p-3 rounded-lg border border-gray-300 w-full md:w-[40rem]"
+                type="text"
+                name="fullName"
+                value={credentials.fullName}
+                onChange={onChange}
+                placeholder="Enter Full Name"
                 required
               />
-              {previewProfilePic && (
-                <img
-                  className="rounded-full border-2"
-                  src={previewProfilePic}
-                  alt="Avatar"
-                  width="80"
-                />
-              )}
+            </div>
+            <div>
+              <label className="text-gray-700 font-bold mb-1">Username</label>
+              <input
+                className="p-3 rounded-lg border border-gray-300 w-full"
+                type="text"
+                name="username"
+                value={credentials.username}
+                onChange={onChange}
+                placeholder="Username"
+                required
+              />
+            </div>
+            <div>
+              <label className="text-gray-700 font-bold mb-1">Email</label>
+              <input
+                className="p-3 rounded-lg border border-gray-300 w-full"
+                type="email"
+                name="email"
+                value={credentials.email}
+                onChange={onChange}
+                placeholder="Enter Your Email"
+                required
+              />
+            </div>
+            <div>
+              <label className="text-gray-700 font-bold mb-1">Password</label>
+              <input
+                className="p-3 rounded-lg border border-gray-300 w-full"
+                type="password"
+                name="password"
+                value={credentials.password}
+                onChange={onChange}
+                placeholder="Password"
+                required
+              />
             </div>
           </div>
-          <div className="flex flex-col">
-            <label className="text-white font-bold mb-2 text-2xl">Full Name</label>
-            <input
-              className="p-2 rounded-lg"
-              type="text"
-              name="fullName"
-              id="fullName"
-              value={credentials.fullName}
-              onChange={onChange}
-              placeholder="Enter Full Name"
-              required
-            />
-            <label className="text-white font-bold mb-2 text-2xl">Username</label>
-            <input
-              className="p-2 rounded-lg"
-              type="text"
-              name="username"
-              id="username"
-              value={credentials.username}
-              onChange={onChange}
-              placeholder="Username"
-              required
-            />
-            <label className="text-white font-bold mb-2 text-2xl">Email</label>
-            <input
-              className="p-2 rounded-lg"
-              type="email"
-              name="email"
-              id="email"
-              value={credentials.email}
-              onChange={onChange}
-              placeholder="Enter Your Email"
-              required
-            />
-            <label className="text-white font-bold mb-2 text-2xl">Password</label>
-            <input
-              className="p-2 rounded-lg"
-              type="password"
-              name="password"
-              id="password"
-              value={credentials.password}
-              onChange={onChange}
-              placeholder="Password"
-              required
-            />
-            
-            <button
-              className="bg-blue-700 my-3 p-2 rounded hover:text-white hover:bg-indigo-600"
-              type="submit"
-            >
-              Submit
-            </button>
-            <div className="text-white text-sm flex md:justify-around">
-              <div>
-                Don't have an account?{" "}
-                <Link to="/signup" className="text-red-500">
-                  Sign Up
-                </Link>{" "}
-              </div>
-              <div>
-                <span className="text-orange-700 ml-12">
-                  <Link to="/change-pass">Forgot password</Link>
-                </span>
-              </div>
-            </div>
-          </div>
+
+          <button
+            className="bg-blue-600 text-white font-semibold py-3 rounded-lg mt-6 hover:bg-blue-700 transition duration-200"
+            type="submit"
+          >
+            Register
+          </button>
+
+          <p className="text-center text-sm text-gray-600 mt-4">
+            Already have an account?{" "}
+            <Link to="/login" className="text-blue-500 hover:underline">
+              Login
+            </Link>
+          </p>
         </form>
       </div>
     </div>

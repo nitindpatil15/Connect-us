@@ -90,12 +90,12 @@ const Chat = () => {
   };
 
   return (
-    <div className="flex h-screen w-full bg-gray-50">
+    <div className="flex h-screen bg-gray-50">
       {(!selectedContact || !isMobile) && (
         <div
           className={`md:flex ${
             isMobile && selectedContact ? "hidden" : "block"
-          } md:w-1/3`}
+          } md:w-[100%]`}
         >
           <ContactList
             contactList={contactList}

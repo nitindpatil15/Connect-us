@@ -11,19 +11,20 @@ import {
   updateComment,
   deleteComment,
 } from "../../Redux/Features/commentSlice";
-import { useNavigate } from "react-router-dom"; 
+import { useNavigate } from "react-router-dom";
+import "material-icons/iconfont/material-icons.css";
 
 const Feed = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate(); // Initialize usenavigate
+  const navigate = useNavigate(); // Initialize useNavigate
   const { posts, loading, error } = useSelector((state) => state.posts);
   const { postLikes } = useSelector((state) => state.likes);
-  const { comments } = useSelector((state) => state.comments); // Assuming comments are stored here
+  const { comments } = useSelector((state) => state.comments);
 
   const [commentContent, setCommentContent] = useState("");
   const [commentIdToUpdate, setCommentIdToUpdate] = useState(null);
   const [commentsVisible, setCommentsVisible] = useState({});
-  const [searchTerm, setSearchTerm] = useState(""); // State for the search term
+  const [searchTerm, setSearchTerm] = useState("");
   const [filteredPosts, setFilteredPosts] = useState(posts);
 
   useEffect(() => {
@@ -31,7 +32,6 @@ const Feed = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    // Filter posts based on the search term
     if (searchTerm) {
       const lowercasedSearchTerm = searchTerm.toLowerCase();
       setFilteredPosts(
@@ -53,19 +53,17 @@ const Feed = () => {
   const handleCommentSubmit = (postId) => {
     if (commentContent.trim()) {
       if (commentIdToUpdate) {
-        // Update existing comment
         dispatch(
           updateComment({
             commentId: commentIdToUpdate,
             content: commentContent,
           })
         );
-        setCommentIdToUpdate(null); // Reset after updating
+        setCommentIdToUpdate(null);
       } else {
-        // Add new comment
         dispatch(addComment({ postId, content: commentContent }));
       }
-      setCommentContent(""); // Reset comment content after submission
+      setCommentContent("");
     }
   };
 
@@ -92,7 +90,7 @@ const Feed = () => {
   if (error) return <p>{error}</p>;
 
   return (
-    <div className="flex flex-col m-auto bg-black text-white p-4 md:ml-40">
+    <div className="flex flex-col bg-black text-white p-4">
       <input
         type="text"
         placeholder="Search users or content..."
@@ -104,18 +102,18 @@ const Feed = () => {
         filteredPosts.map((post) => (
           <div
             key={post._id}
-            className="mb-4 p-3 border border-gray-700 rounded-lg w-[30rem]"
+            className="mb-4 p-3 border border-gray-700 rounded-lg md:w-[30rem] w-[20rem]"
           >
             <div className="author-info flex items-center mb-2">
               <img
                 src={post.owner?.avatar || "default-avatar-url.jpg"}
                 alt={`${post.owner?.username || "Unknown Author"}'s avatar`}
-                className="avatar w-10 h-10 rounded-full mr-3 cursor-pointer" 
+                className="avatar w-10 h-10 rounded-full mr-3 cursor-pointer"
                 onClick={() => navigate(`/profile/${post.owner.id}`)}
               />
               <h3
-                className="text-lg font-semibold cursor-pointer" 
-                onClick={() => navigate(`/profile/${post.owner.id}`)} 
+                className="text-lg font-semibold cursor-pointer"
+                onClick={() => navigate(`/profile/${post.owner.id}`)}
               >
                 {post.owner?.username || "Unknown Author"}
               </h3>
@@ -128,39 +126,55 @@ const Feed = () => {
                 className="post-image mb-3 w-[30rem]"
               />
             )}
-            <button
-              onClick={() => handleLikeToggle(post._id)}
-              className={`like-button ${postLikes[post._id] ? "liked" : ""}`}
+            <div
+              className={`flex items-center p-2 ${
+                commentsVisible[post._id] ? "flex-col" : ""
+              }`}
             >
-              {postLikes[post._id] ? "Unlike" : "Like"}
-            </button>
-
-            <div className="comments-section mt-4">
-              <button onClick={() => toggleCommentsVisibility(post._id)}>
-                {commentsVisible[post._id] ? "Hide Comments" : "Show Comments"}
+              <button
+                onClick={() => handleLikeToggle(post._id)}
+                className="like-button"
+                style={{
+                  color: postLikes[post._id] ? "red" : "white",
+                }}
+              >
+                {postLikes[post._id] ? (
+                  <span className="material-icons">favorite</span>
+                ) : (
+                  <span className="material-icons">favorite_border</span>
+                )}
+              </button>
+              <button
+                onClick={() => toggleCommentsVisibility(post._id)}
+                className="mx-2"
+              >
+                {commentsVisible[post._id] ? (
+                  <span className="material-icons">hide_source</span>
+                ) : (
+                  <span className="material-icons">add_comment</span>
+                )}
               </button>
               {commentsVisible[post._id] && (
-                <div>
-                  <textarea
+                <div className="comments-section mt-4">
+                  <input
                     value={commentContent}
                     onChange={(e) => setCommentContent(e.target.value)}
                     placeholder="Add a comment..."
-                    className="w-full p-2 mb-2 text-black"
+                    className="w-full p-2 mb-2 text-black rounded-lg"
                   />
                   <button
                     onClick={() => handleCommentSubmit(post._id)}
                     className="submit-comment-button"
                   >
-                    {commentIdToUpdate ? "Update Comment" : "Submit Comment"}{" "}
-                    {/* Change button text based on action */}
+                    {commentIdToUpdate ? "Update Comment" : "Submit Comment"}
                   </button>
                   <div className="comment-list mt-3">
                     {comments.map((comment) => (
                       <div
                         key={comment._id}
-                        className="comment flex items-center justify-between mb-2"
+                        className="comment flex items-center justify-between mb-2 bg-gray-500 p-2"
                       >
-                        <div className="flex items-center">
+                        <div className="flex items-center ">
                           <img
                             src={
                               comment.owner[0]?.avatar ||
@@ -172,7 +186,7 @@ const Feed = () => {
                             className="avatar w-8 h-8 rounded-full mr-2 cursor-pointer"
                             onClick={() =>
                               navigate(`/profile/${comment.owner[0]._id}`)
-                            } 
+                            }
                           />
                           <div>
                             <p className="font-semibold">
@@ -184,7 +198,7 @@ const Feed = () => {
                             </span>
                           </div>
                         </div>
-                        <div className="flex items-center">
+                        <div className="flex md:flex-row flex-col items-center">
                           <button
                             onClick={() => handleCommentLike(comment._id)}
                             className="like-button mx-2"
@@ -194,7 +208,7 @@ const Feed = () => {
                           <button
                             onClick={() => {
                               setCommentContent(comment.content);
-                              setCommentIdToUpdate(comment._id); // Set ID to update
+                              setCommentIdToUpdate(comment._id);
                             }}
                             className="mx-2"
                           >

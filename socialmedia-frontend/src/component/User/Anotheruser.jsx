@@ -67,17 +67,17 @@ const UserById = () => {
         <img
           src={UserById?.avatar}
           alt="Avatar"
-          className="w-40 h-40 rounded-full border mt-10 border-gray-300"
+          className="w-20 md:w-40 h-20 md:h-40 rounded-full border mt-10 border-gray-300"
         />
         <div>
-          <h2 className="text-2xl text-white font-bold">
+          <h2 className="text-base md:text-2xl text-white font-bold">
             {UserById?.fullName}
           </h2>
-          <p className="text-gray-400 font-bold">@{UserById?.username}</p>
+          <p className="text-gray-400 text-base font-bold">@{UserById?.username}</p>
           <div className="flex space-x-4 mt-2 text-xl">
             <div
               onClick={() => setShowFollowers(true)}
-              className="text-white cursor-pointer"
+              className="text-white cursor-pointer text-base"
             >
               <span className="font-bold">
                 {UserById?.followers?.length || 0}
@@ -86,7 +86,7 @@ const UserById = () => {
             </div>
             <div
               onClick={() => setShowFollowing(true)}
-              className="text-white cursor-pointer"
+              className="text-white cursor-pointer text-base"
             >
               <span className="font-bold">
                 {UserById?.following?.length || 0}
@@ -131,13 +131,13 @@ const UserById = () => {
           userpostById.map((post) => (
             <div
               key={post._id}
-              className="mt-2 w-full h-32 bg-gray-200 rounded-md"
+              className="mt-2 w-full md:h-32 bg-gray-200 rounded-md"
             >
               <img
                 src={post.image}
                 alt={post.title}
                 onClick={() => handlePostById(post._id)}
-                className="w-[20rem] h-[20rem] my-2 object-cover rounded-md cursor-pointer"
+                className="w-[20rem] h-auto md:h-[20rem] my-2 object-cover rounded-md cursor-pointer"
               />
             </div>
           ))

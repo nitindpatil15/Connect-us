@@ -104,11 +104,12 @@ function Navbar() {
                 onClick={() => setIsOpen(false)}
               >
                 <div className="flex items-center">
-                <img
-                  src={userInfo?.user?.avatar || "default-avatar-url"}
-                  alt="Profile"
-                  className="w-8 md:w-12 rounded-full mr-2"
-                /><div>Profile</div>
+                  <img
+                    src={userInfo?.user?.avatar || "default-avatar-url"}
+                    alt="Profile"
+                    className="w-8 md:w-12 rounded-full mr-2"
+                  />
+                  <div>Profile</div>
                 </div>
               </Link>
               <button
@@ -124,7 +125,14 @@ function Navbar() {
               </button>
             </>
           ) : (
-            <></>
+            <>
+              <button
+                onClick={() => navigate("/login")}
+                className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+              >
+                Login
+              </button>
+            </>
           )}
         </div>
       </div>

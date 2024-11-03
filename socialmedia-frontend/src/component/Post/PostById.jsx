@@ -123,14 +123,14 @@ const PostById = () => {
   if (!singlePost) return <p className="text-center">No post found</p>;
 
   return (
-    <div className="flex flex-col p-4 bg-white rounded-lg shadow-lg mt-14 ml-28 w-[40rem]">
+    <div className="flex flex-col justify-center p-1 text-white border-2 border-white rounded-lg shadow-lg md:mt-4 md:w-[40rem]">
       <div className="flex items-center mb-4">
         <img
           src={singlePost?.user?.avatar}
           alt={singlePost?.user?.username}
-          className="w-10 h-10 rounded-full border border-gray-300 mr-2"
+          className="w-10 h-10 rounded-full border border-gray-300"
         />
-        <h3 className="text-lg font-semibold">{singlePost?.user?.username}</h3>
+        <h3 className="text-lg font-semibold mx-2">{singlePost?.user?.username}</h3>
       </div>
 
       <img
@@ -145,7 +145,7 @@ const PostById = () => {
             <h2 className="text-2xl font-bold">
               {singlePost?.postById?.title}
             </h2>
-            <p className="text-gray-800">{singlePost?.postById?.content}</p>
+            <p className="text-white">{singlePost?.postById?.content}</p>
           </>
         ) : (
           <form onSubmit={handleUpdatePost} className="mb-4">
@@ -154,13 +154,13 @@ const PostById = () => {
               value={updatedTitle}
               onChange={(e) => setUpdatedTitle(e.target.value)}
               placeholder="Title"
-              className="w-full p-2 border border-gray-300 rounded-lg mb-2"
+              className="w-auto p-2 border border-gray-300 rounded-lg mb-2"
             />
             <textarea
               value={updatedContent}
               onChange={(e) => setUpdatedContent(e.target.value)}
               rows="4"
-              className="w-full p-2 border border-gray-300 rounded-lg mb-2"
+              className="w-auto p-2 border border-gray-300 rounded-lg mb-2"
             ></textarea>
             <div className="flex justify-between">
               <button
